@@ -27,7 +27,7 @@ LOGOUT
 .
 "
 
-local __RESULT_MSG=$(printf "%s" $__MSG | $OPENSSL s_client -quiet ddnsclient.onamae.com:65010)
+local __RESULT_MSG=$(printf "%s" "$__MSG" | $OPENSSL s_client -quiet ddnsclient.onamae.com:65010)
 
 local __SUCCESS_MSG="000 COMMAND SUCCESSFUL
 .
