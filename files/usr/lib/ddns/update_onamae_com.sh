@@ -17,7 +17,7 @@ PASSWORD:$password
 MODIP"
 if [ -n "$__HOST" ]; then
 	__MSG="$__MSG
-	HOSTNAME:$__HOST"
+HOSTNAME:$__HOST"
 fi
 __MSG="$__MSG
 DOMNAME:$__DOMAIN
@@ -27,7 +27,7 @@ LOGOUT
 .
 "
 
-local __RESULT_MSG=$(printf "%s" "$__MSG" | $OPENSSL s_client -quiet ddnsclient.onamae.com:65010)
+local __RESULT_MSG=$(printf "%s" "$__MSG" | $OPENSSL s_client -quiet ddnsclient.onamae.com:65010 2>/dev/null)
 
 local __SUCCESS_MSG="000 COMMAND SUCCESSFUL
 .
