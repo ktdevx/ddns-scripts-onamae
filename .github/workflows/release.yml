@@ -11,11 +11,14 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
+      # The SDK treats the workspace as a feed, so the package must live in a subdirectory.
       - uses: actions/checkout@v4
+        with:
+          path: ddns-scripts-onamae
 
       - name: Check tag matches PKG_VERSION
         run: |
-          version=$(sed -n 's/^PKG_VERSION:=//p' Makefile)
+          version=$(sed -n 's/^PKG_VERSION:=//p' ddns-scripts-onamae/Makefile)
           if [ "v$version" != "$GITHUB_REF_NAME" ]; then
             echo "::error::Tag $GITHUB_REF_NAME does not match PKG_VERSION v$version"
             exit 1
