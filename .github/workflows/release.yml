@@ -1,0 +1,36 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check tag matches PKG_VERSION
+        run: |
+          version=$(sed -n 's/^PKG_VERSION:=//p' Makefile)
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match PKG_VERSION v$version"
+            exit 1
+          fi
+
+      - name: Build with OpenWrt SDK
+        uses: openwrt/gh-action-sdk@main
+        env:
+          ARCH: x86_64-24.10.0
+          FEEDNAME: ddns_scripts_onamae
+          PACKAGES: ddns-scripts-onamae
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: bin/packages/**/ddns-scripts-onamae*.ipk
+          fail_on_unmatched_files: true
+          generate_release_notes: true

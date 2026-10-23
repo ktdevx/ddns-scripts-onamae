@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    name: Build package (OpenWrt SDK)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build with OpenWrt SDK
+        uses: openwrt/gh-action-sdk@main
+        env:
+          ARCH: x86_64-24.10.0
+          FEEDNAME: ddns_scripts_onamae
+          PACKAGES: ddns-scripts-onamae
+
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: ddns-scripts-onamae
+          path: bin/packages/**/ddns-scripts-onamae*.ipk
+          if-no-files-found: error
