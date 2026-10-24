@@ -1,0 +1,61 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build ${{ matrix.format }} (OpenWrt SDK ${{ matrix.arch }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - format: ipk
+            arch: x86_64-24.10.0
+          - format: apk
+            arch: x86_64-25.12.6
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check tag matches PKG_VERSION
+        run: |
+          version=$(sed -n 's/^PKG_VERSION:=//p' ddns-scripts-onamae/Makefile)
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match PKG_VERSION v$version"
+            exit 1
+          fi
+
+      - name: Build with OpenWrt SDK
+        uses: openwrt/gh-action-sdk@main
+        env:
+          ARCH: ${{ matrix.arch }}
+          FEEDNAME: ddns_scripts_onamae
+          PACKAGES: ddns-scripts-onamae
+
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: ddns-scripts-onamae-${{ matrix.format }}
+          path: bin/packages/**/ddns-scripts-onamae*.${{ matrix.format }}
+          if-no-files-found: error
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: ddns-scripts-onamae-*
+          path: dist
+          merge-multiple: true
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          fail_on_unmatched_files: true
+          generate_release_notes: true
