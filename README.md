@@ -34,4 +34,7 @@ and select `Network > IP Addresses and Names > ddns-scripts-onamae`.
 
 ### From a release
 
-Download the `.ipk` from the Releases page and install it with `opkg install`.
+Download the package from the Releases page and install it.
+
+- OpenWrt 24.10 or earlier: `opkg install ddns-scripts-onamae_*.ipk`
+- OpenWrt 25.12 or later: `apk add --allow-untrusted ./ddns-scripts-onamae-*.apk`

@@ -7,21 +7,29 @@ on:
 
 jobs:
   build:
-    name: Build package (OpenWrt SDK)
+    name: Build ${{ matrix.format }} (OpenWrt SDK ${{ matrix.arch }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - format: ipk
+            arch: x86_64-24.10.0
+          - format: apk
+            arch: x86_64-25.12.6
     steps:
       - uses: actions/checkout@v4
 
       - name: Build with OpenWrt SDK
         uses: openwrt/gh-action-sdk@main
         env:
-          ARCH: x86_64-24.10.0
+          ARCH: ${{ matrix.arch }}
           FEEDNAME: ddns_scripts_onamae
           PACKAGES: ddns-scripts-onamae
 
       - name: Upload package
         uses: actions/upload-artifact@v4
         with:
-          name: ddns-scripts-onamae
-          path: bin/packages/**/ddns-scripts-onamae*.ipk
+          name: ddns-scripts-onamae-${{ matrix.format }}
+          path: bin/packages/**/ddns-scripts-onamae*.${{ matrix.format }}
           if-no-files-found: error
