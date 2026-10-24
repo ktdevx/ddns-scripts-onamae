@@ -10,10 +10,7 @@ jobs:
     name: Build package (OpenWrt SDK)
     runs-on: ubuntu-latest
     steps:
-      # The SDK treats the workspace as a feed, so the package must live in a subdirectory.
       - uses: actions/checkout@v4
-        with:
-          path: ddns-scripts-onamae
 
       - name: Build with OpenWrt SDK
         uses: openwrt/gh-action-sdk@main
